@@ -8,7 +8,7 @@ public class StudentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String firsName;
+    private String firstName;
     private String lastName;
     private String profilePicture;
     private String email;
@@ -24,12 +24,12 @@ public class StudentEntity {
         this.id = id;
     }
 
-    public String getFirsName() {
-        return firsName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirsName(String firsName) {
-        this.firsName = firsName;
+    public void setFirstName(String firsName) {
+        this.firstName = firsName;
     }
 
     public String getLastName() {
