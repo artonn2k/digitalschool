@@ -1,5 +1,10 @@
 package com.zerogravitysolutions.digitalschool.students;
 
+import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,9 +16,12 @@ import java.util.List;
 public class StudentServiceImpl implements StudentService{
 
     private StudentRepository studentRepository;
+    private ModelMapper modelMapper;
 
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    @Autowired
+    public StudentServiceImpl(StudentRepository studentRepository, ModelMapper modelMapper) {
         this.studentRepository = studentRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -54,6 +62,16 @@ public class StudentServiceImpl implements StudentService{
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Student with id " +id +" not found");
         }
 
+    }
+
+    @Override
+    public Page<StudentDTO> findAll(Pageable pageable) {
+        Page<StudentEntity> studentEntityPage = studentRepository.findAll(pageable);
+            return  studentEntityPage.map(student->modelMapper.map(student,StudentDTO.class));
+    }
+
+    public StudentDTO convertToDTO(StudentEntity studentEntity) {
+        return modelMapper.map(studentEntity, StudentDTO.class);
     }
 
     public List<StudentEntity> allStudents(){
