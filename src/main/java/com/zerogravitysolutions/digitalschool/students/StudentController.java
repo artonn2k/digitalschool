@@ -10,11 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
 @RequestMapping("/students")
-@CrossOrigin
 public class StudentController {
 
     @Autowired
@@ -30,6 +30,17 @@ public class StudentController {
     public StudentEntity getStudentById(@PathVariable long id){
         return studentService.findById(id);
     }
+
+    @GetMapping(params = "name")
+    public Set<StudentEntity> findByNameOrEmail(@RequestParam String name){
+        try{
+            return studentService.findByNameOrEmail(name,null);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
