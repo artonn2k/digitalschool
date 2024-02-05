@@ -14,7 +14,7 @@ public interface StudentService {
     StudentEntity findById(long id);
     StudentEntity save(StudentEntity studentEntity);
 
-    List<StudentEntity> findAll(StudentEntity studentEntity);
+    List<StudentEntity> findAll();
 
     void deleteStudentById(long id);
 

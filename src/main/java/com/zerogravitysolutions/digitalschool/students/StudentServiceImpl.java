@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudentServiceImpl implements StudentService{
@@ -26,7 +28,12 @@ public class StudentServiceImpl implements StudentService{
 
     @Override
     public StudentEntity findById(long id) {
-        return studentRepository.findById(id).get();
+        StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
+                ()-> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,"Student with this id is not found"
+                ));
+
+        return studentEntity;
     }
 
     @Override
@@ -35,7 +42,7 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
-    public List<StudentEntity> findAll(StudentEntity studentEntity) {
+    public List<StudentEntity> findAll() {
         return studentRepository.findAll();
     }
 
