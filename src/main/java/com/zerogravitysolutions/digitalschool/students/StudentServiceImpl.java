@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class StudentServiceImpl implements StudentService{
@@ -27,6 +28,11 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
+    public StudentEntity save(StudentEntity studentEntity) {
+        return studentRepository.save(studentEntity);
+    }
+    //------------------------------------------------------------------------------------------------------
+    @Override
     public StudentEntity findById(long id) {
         StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
                 ()-> new ResponseStatusException(
@@ -36,20 +42,13 @@ public class StudentServiceImpl implements StudentService{
         return studentEntity;
     }
 
-    @Override
-    public StudentEntity save(StudentEntity studentEntity) {
-        return studentRepository.save(studentEntity);
-    }
+    //------------------------------------------------------------------------------------------------------
 
     @Override
     public List<StudentEntity> findAll() {
         return studentRepository.findAll();
     }
-
-    @Override
-    public void deleteStudentById(long id) {
-         studentRepository.deleteById(id);
-    }
+    //------------------------------------------------------------------------------------------------------
 
     @Override
     public StudentEntity update(@PathVariable(name = "id") long id, StudentEntity updatedStudent) {
@@ -71,6 +70,20 @@ public class StudentServiceImpl implements StudentService{
 
     }
 
+    //------------------------------------------------------------------------------------------------------
+    @Override
+    public Set<StudentEntity> findByNameOrEmail(String name, String email) {
+        return studentRepository.findByFirstNameIgnoreCase(name);
+    }
+
+    //------------------------------------------------------------------------------------------------------
+
+    @Override
+    public void deleteStudentById(long id) {
+         studentRepository.deleteById(id);
+    }
+    //------------------------------------------------------------------------------------------------------
+
     @Override
     public Page<StudentDTO> findAll(Pageable pageable) {
         Page<StudentEntity> studentEntityPage = studentRepository.findAll(pageable);
@@ -80,6 +93,7 @@ public class StudentServiceImpl implements StudentService{
     public StudentDTO convertToDTO(StudentEntity studentEntity) {
         return modelMapper.map(studentEntity, StudentDTO.class);
     }
+    //------------------------------------------------------------------------------------------------------
 
     public List<StudentEntity> allStudents(){
         return studentRepository.findAll();

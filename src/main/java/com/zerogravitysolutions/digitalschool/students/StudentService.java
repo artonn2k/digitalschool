@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Set;
 
 public interface StudentService {
 
@@ -16,9 +17,11 @@ public interface StudentService {
 
     List<StudentEntity> findAll();
 
+
     void deleteStudentById(long id);
 
     StudentEntity update(long id, StudentEntity updatedStudent);
 
     Page<StudentDTO> findAll(Pageable pageable);
+    Set<StudentEntity> findByNameOrEmail(String name, String email);
 }
