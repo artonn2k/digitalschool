@@ -32,7 +32,7 @@ public class StudentController {
     }
 
     @GetMapping(params = "name")
-    public Set<StudentEntity> findByNameOrEmail(@RequestParam String name){
+    public Set<StudentEntity> findByNameOrEmail(@RequestParam String name, @RequestParam (required = false) String email){
         try{
             return studentService.findByNameOrEmail(name,null);
         }catch (Exception e){
@@ -65,7 +65,7 @@ public class StudentController {
     }
 
     @GetMapping(path = "/paged")
-    public ResponseEntity<Page<StudentDTO>> getAllStudents(@PageableDefault(size = 10, sort = "id") Pageable pageable){
+    public ResponseEntity<Page<StudentDTO>> getAllStudents(@PageableDefault(size = 10, sort = "firstName, id") Pageable pageable){
         try{
             Page<StudentDTO> studentDTOS = studentService.findAll(pageable);
             return ResponseEntity.ok(studentDTOS);

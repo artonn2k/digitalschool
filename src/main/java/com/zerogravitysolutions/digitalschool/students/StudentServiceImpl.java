@@ -73,7 +73,8 @@ public class StudentServiceImpl implements StudentService{
     //------------------------------------------------------------------------------------------------------
     @Override
     public Set<StudentEntity> findByNameOrEmail(String name, String email) {
-        return studentRepository.findByFirstNameIgnoreCase(name);
+        return studentRepository.findByFirstNameOrEmailIgnoreCase(name,email);
+
     }
 
     //------------------------------------------------------------------------------------------------------

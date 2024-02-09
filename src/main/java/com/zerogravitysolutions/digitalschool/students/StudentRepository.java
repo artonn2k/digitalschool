@@ -8,5 +8,5 @@ import java.util.Set;
 @Repository
 public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
 
-    Set<StudentEntity> findByFirstNameIgnoreCase(String firstName);
+    Set<StudentEntity> findByFirstNameOrEmailIgnoreCase(String firstName, String email);
 }
