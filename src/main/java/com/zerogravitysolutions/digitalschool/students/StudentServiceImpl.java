@@ -44,10 +44,6 @@ public class StudentServiceImpl implements StudentService{
 
     //------------------------------------------------------------------------------------------------------
 
-    @Override
-    public List<StudentEntity> findAll() {
-        return studentRepository.findAll();
-    }
     //------------------------------------------------------------------------------------------------------
 
     @Override
@@ -70,6 +66,8 @@ public class StudentServiceImpl implements StudentService{
 
     }
 
+
+
     //------------------------------------------------------------------------------------------------------
     @Override
     public Set<StudentEntity> findByNameOrEmail(String name, String email) {
@@ -85,7 +83,17 @@ public class StudentServiceImpl implements StudentService{
     }
     //------------------------------------------------------------------------------------------------------
 
+
+    //returning pageable list of students
     @Override
+    public Page<StudentEntity> findAll(Pageable pageable) {
+
+        return studentRepository.findAll(pageable);
+
+    }
+
+    //this one returns the lists of pageable StudentDTOs
+/*   @Override
     public Page<StudentDTO> findAll(Pageable pageable) {
         Page<StudentEntity> studentEntityPage = studentRepository.findAll(pageable);
             return  studentEntityPage.map(student->modelMapper.map(student,StudentDTO.class));
@@ -93,10 +101,7 @@ public class StudentServiceImpl implements StudentService{
 
     public StudentDTO convertToDTO(StudentEntity studentEntity) {
         return modelMapper.map(studentEntity, StudentDTO.class);
-    }
+    }*/
     //------------------------------------------------------------------------------------------------------
 
-    public List<StudentEntity> allStudents(){
-        return studentRepository.findAll();
-    }
 }

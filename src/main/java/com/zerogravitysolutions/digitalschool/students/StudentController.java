@@ -22,8 +22,7 @@ public class StudentController {
 
     @GetMapping
     public List<StudentEntity> getStudents(){
-
-        return studentService.findAll();
+        return null;
     }
 
     @GetMapping(path = "/{id}")
@@ -64,8 +63,16 @@ public class StudentController {
         studentService.deleteStudentById(id);
     }
 
+    //--------------------------------------------------------------------------------------------------------------------
     @GetMapping(path = "/paged")
-    public ResponseEntity<Page<StudentDTO>> getAllStudents(@PageableDefault(size = 10, sort = "firstName, id") Pageable pageable){
+    public Page<StudentEntity> getAllStudents(@PageableDefault(size = 10,sort = {"id", "firstName"}) Pageable pageable){
+        return studentService.findAll(pageable);
+    }
+
+    // http://localhost:8085/students?page=0&sort=firstName,desc&sort=id,asc&size=1
+
+/*    @GetMapping(path = "/paged")
+    public ResponseEntity<Page<StudentDTO>> getAllStudents(@PageableDefault(size = 10, sort = {"firstName", "id"}) Pageable pageable){
         try{
             Page<StudentDTO> studentDTOS = studentService.findAll(pageable);
             return ResponseEntity.ok(studentDTOS);
@@ -73,5 +80,6 @@ public class StudentController {
             e.printStackTrace();
             throw e;
         }
-    }
+    }*/
+    //-----------------------------------------------------------------------------------------------------------------------
 }
