@@ -26,7 +26,7 @@ public class StudentController {
     }
 
     @GetMapping(path = "/{id}")
-    public StudentEntity getStudentById(@PathVariable long id){
+    public StudentEntity getStudentById(@PathVariable Long id){
         return studentService.findById(id);
     }
 
@@ -49,7 +49,7 @@ public class StudentController {
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<StudentEntity> updatedStudent(@PathVariable long id,@RequestBody StudentEntity updatedStudent){
+    public ResponseEntity<StudentEntity> updatedStudent(@PathVariable Long id,@RequestBody StudentEntity updatedStudent){
         StudentEntity updatedEntity = studentService.update(id,updatedStudent);
         if(updatedEntity!=null){
             return ResponseEntity.ok(updatedEntity);
@@ -59,7 +59,7 @@ public class StudentController {
     }
 
     @DeleteMapping(path = "{id}")
-    public void deleteStudentById(@PathVariable long id){
+    public void deleteStudentById(@PathVariable Long id){
         studentService.deleteStudentById(id);
     }
 

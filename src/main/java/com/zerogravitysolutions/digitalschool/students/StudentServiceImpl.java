@@ -33,7 +33,7 @@ public class StudentServiceImpl implements StudentService{
     }
     //------------------------------------------------------------------------------------------------------
     @Override
-    public StudentEntity findById(long id) {
+    public StudentEntity findById(Long id) {
         StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
                 ()-> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,"Student with this id is not found"
@@ -47,7 +47,7 @@ public class StudentServiceImpl implements StudentService{
     //------------------------------------------------------------------------------------------------------
 
     @Override
-    public StudentEntity update(@PathVariable(name = "id") long id, StudentEntity updatedStudent) {
+    public StudentEntity update(@PathVariable(name = "id") Long id, StudentEntity updatedStudent) {
         StudentEntity existingStudent = studentRepository.findById(id).orElse(null);
 
         if(existingStudent !=null){
@@ -78,7 +78,7 @@ public class StudentServiceImpl implements StudentService{
     //------------------------------------------------------------------------------------------------------
 
     @Override
-    public void deleteStudentById(long id) {
+    public void deleteStudentById(Long id) {
          studentRepository.deleteById(id);
     }
     //------------------------------------------------------------------------------------------------------

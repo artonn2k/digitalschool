@@ -12,12 +12,12 @@ import java.util.Set;
 
 public interface StudentService {
 
-    StudentEntity findById(long id);
+    StudentEntity findById(Long id);
     StudentEntity save(StudentEntity studentEntity);
 
-    void deleteStudentById(long id);
+    void deleteStudentById(Long id);
 
-    StudentEntity update(long id, StudentEntity updatedStudent);
+    StudentEntity update(Long id, StudentEntity updatedStudent);
 
    //Page<StudentDTO> findAll(Pageable pageable);
    Page<StudentEntity> findAll(Pageable pageable);
