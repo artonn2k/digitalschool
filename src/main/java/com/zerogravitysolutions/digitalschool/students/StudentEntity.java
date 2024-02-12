@@ -1,13 +1,11 @@
 package com.zerogravitysolutions.digitalschool.students;
 
+import com.zerogravitysolutions.digitalschool.commons.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "students")
-public class StudentEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class StudentEntity extends BaseEntity {
     private String firstName;
     private String lastName;
     private String profilePicture;
@@ -15,14 +13,6 @@ public class StudentEntity {
     private String phoneNumber;
     private String address;
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getFirstName() {
         return firstName;
