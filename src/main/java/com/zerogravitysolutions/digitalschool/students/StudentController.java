@@ -17,13 +17,16 @@ import java.util.Set;
 @RequestMapping("/students")
 public class StudentController {
 
-    @Autowired
     private StudentService studentService;
 
-    @GetMapping
-    public List<StudentEntity> getStudents(){
-        return null;
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
     }
+
+//    @GetMapping
+//    public List<StudentEntity> getStudents(){
+//        return studentService.findAll();
+//    }
 
     @GetMapping(path = "/{id}")
     public StudentEntity getStudentById(@PathVariable Long id){

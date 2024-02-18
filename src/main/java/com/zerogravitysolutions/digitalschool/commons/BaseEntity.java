@@ -1,9 +1,11 @@
 package com.zerogravitysolutions.digitalschool.commons;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SourceType;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 public class BaseEntity {
@@ -11,11 +13,18 @@ public class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String createdAt;
+    @CreationTimestamp(source = SourceType.VM)
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime createdAt;
     private Long createdBy;
-    private String updatedAt;
+
+    @UpdateTimestamp(source = SourceType.VM)
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime updatedAt;
     private Long updatedBy;
-    private String deletedAt;
+
+
+    private LocalDateTime deletedAt;
     private Long deletedBy;
 
     public Long getId() {
@@ -26,11 +35,11 @@ public class BaseEntity {
         this.id = id;
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -42,11 +51,11 @@ public class BaseEntity {
         this.createdBy = createdBy;
     }
 
-    public String getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(String updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -58,11 +67,11 @@ public class BaseEntity {
         this.updatedBy = updatedBy;
     }
 
-    public String getDeletedAt() {
+    public LocalDateTime getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(String deletedAt) {
+    public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
 
