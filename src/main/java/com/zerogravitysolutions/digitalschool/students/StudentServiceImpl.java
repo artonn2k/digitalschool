@@ -1,18 +1,13 @@
 package com.zerogravitysolutions.digitalschool.students;
 
-import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -31,6 +26,9 @@ public class StudentServiceImpl implements StudentService{
     public StudentEntity save(StudentEntity studentEntity) {
         return studentRepository.save(studentEntity);
     }
+
+
+
     //------------------------------------------------------------------------------------------------------
     @Override
     public StudentEntity findById(Long id) {
@@ -47,25 +45,15 @@ public class StudentServiceImpl implements StudentService{
     //------------------------------------------------------------------------------------------------------
 
     @Override
-    public StudentEntity update(@PathVariable(name = "id") Long id, StudentEntity updatedStudent) {
-        StudentEntity existingStudent = studentRepository.findById(id).orElse(null);
+    public StudentEntity update(Long id, StudentEntity studentEntity) {
 
-        if(existingStudent !=null){
-            existingStudent.setFirstName(updatedStudent.getFirstName());
-            existingStudent.setLastName(updatedStudent.getLastName());
-            existingStudent.setProfilePicture(updatedStudent.getProfilePicture());
-            existingStudent.setEmail(updatedStudent.getEmail());
-            existingStudent.setPhoneNumber(updatedStudent.getPhoneNumber());
-            existingStudent.setAddress(updatedStudent.getAddress());
+        studentRepository.findById(id).orElseThrow(
+                ()-> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,"Student with this id is not found"
+                ));;
 
-            return studentRepository.save(existingStudent);
-
-        }else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Student with id " +id +" not found");
-        }
-
+        return studentRepository.save(studentEntity);
     }
-
 
 
     //------------------------------------------------------------------------------------------------------
@@ -81,6 +69,8 @@ public class StudentServiceImpl implements StudentService{
     public void deleteStudentById(Long id) {
          studentRepository.deleteById(id);
     }
+
+
     //------------------------------------------------------------------------------------------------------
 
 

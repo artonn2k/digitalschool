@@ -8,6 +8,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Set;
@@ -23,10 +24,6 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-//    @GetMapping
-//    public List<StudentEntity> getStudents(){
-//        return studentService.findAll();
-//    }
 
     @GetMapping(path = "/{id}")
     public StudentEntity getStudentById(@PathVariable Long id){
@@ -51,17 +48,27 @@ public class StudentController {
         return studentService.save(studentEntity);
     }
 
+
     @PutMapping(path = "/{id}")
-    public ResponseEntity<StudentEntity> updatedStudent(@PathVariable Long id,@RequestBody StudentEntity updatedStudent){
-        StudentEntity updatedEntity = studentService.update(id,updatedStudent);
-        if(updatedEntity!=null){
-            return ResponseEntity.ok(updatedEntity);
-        }else {
-            return ResponseEntity.notFound().build();
+    public StudentEntity updateStudent(@PathVariable Long id, @RequestBody StudentEntity studentEntity){
+
+        if(id == null || studentEntity == null){
+            throw  new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+
+//        if(id.equals(studentEntity.getId())){
+//
+//        }
+
+        //studentEntity.setId(id);
+        // in case if you do not send the id in the request body
+
+        return studentService.update(id,studentEntity);
     }
 
+
     @DeleteMapping(path = "{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteStudentById(@PathVariable Long id){
         studentService.deleteStudentById(id);
     }
