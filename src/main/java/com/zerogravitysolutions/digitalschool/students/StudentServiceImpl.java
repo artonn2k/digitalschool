@@ -2,8 +2,8 @@ package com.zerogravitysolutions.digitalschool.students;
 
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDto;
 import com.zerogravitysolutions.digitalschool.students.commons.StudentMapper;
+import com.zerogravitysolutions.digitalschool.students.commons.StudentMapperMapStruct;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -17,12 +17,17 @@ import java.util.Set;
 public class StudentServiceImpl implements StudentService{
 
     private StudentRepository studentRepository;
+
     private ModelMapper modelMapper;
 
-    @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository, ModelMapper modelMapper) {
+    private StudentMapperMapStruct studentMapperMapStruct;
+
+    public StudentServiceImpl(StudentRepository studentRepository,
+                              ModelMapper modelMapper,
+                              StudentMapperMapStruct studentMapperMapStruct){
         this.studentRepository = studentRepository;
         this.modelMapper = modelMapper;
+        this.studentMapperMapStruct = studentMapperMapStruct;
     }
 
     @Override
@@ -63,11 +68,13 @@ public class StudentServiceImpl implements StudentService{
 
         StudentEntity studentEntity =this.findById(id);
 
-        StudentMapper.mapDtoToEntity(studentDto, studentEntity);
+        //StudentMapper.mapDtoToEntity(studentDto, studentEntity);
+        studentMapperMapStruct.mapDtoToEntity(studentDto, studentEntity);
 
         StudentEntity patched = studentRepository.save(studentEntity);
 
-        return StudentMapper.mapEntitytoDto(patched);
+        //return StudentMapper.mapEntityToDto(patched);
+        return studentMapperMapStruct.mapEntityToDto(patched);
     }
 
 

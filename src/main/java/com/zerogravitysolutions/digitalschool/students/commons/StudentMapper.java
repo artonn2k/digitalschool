@@ -32,7 +32,7 @@ public class StudentMapper {
         }
     }
 
-    public static StudentDto mapEntitytoDto(StudentEntity source){
+    public static StudentDto mapEntityToDto(StudentEntity source){
         StudentDto studentDto = new StudentDto();
 
         studentDto.setId(source.getId());
