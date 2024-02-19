@@ -1,5 +1,7 @@
 package com.zerogravitysolutions.digitalschool.students;
 
+import com.zerogravitysolutions.digitalschool.DTOs.StudentDto;
+import com.zerogravitysolutions.digitalschool.students.commons.StudentMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,6 +57,18 @@ public class StudentServiceImpl implements StudentService{
         return studentRepository.save(studentEntity);
     }
 
+    @Override
+    public StudentDto patchStudent(Long id, StudentDto studentDto) {
+
+        StudentEntity studentEntity =this.findById(id);
+
+        StudentMapper.mapDtoToEntity(studentDto, studentEntity);
+
+        StudentEntity patched = studentRepository.save(studentEntity);
+
+        return StudentMapper.mapEntitytoDto(patched);
+    }
+
 
     //------------------------------------------------------------------------------------------------------
     @Override
@@ -84,13 +98,13 @@ public class StudentServiceImpl implements StudentService{
 
     //this one returns the lists of pageable StudentDTOs
 /*   @Override
-    public Page<StudentDTO> findAll(Pageable pageable) {
+    public Page<StudentDto> findAll(Pageable pageable) {
         Page<StudentEntity> studentEntityPage = studentRepository.findAll(pageable);
-            return  studentEntityPage.map(student->modelMapper.map(student,StudentDTO.class));
+            return  studentEntityPage.map(student->modelMapper.map(student,StudentDto.class));
     }
 
-    public StudentDTO convertToDTO(StudentEntity studentEntity) {
-        return modelMapper.map(studentEntity, StudentDTO.class);
+    public StudentDto convertToDTO(StudentEntity studentEntity) {
+        return modelMapper.map(studentEntity, StudentDto.class);
     }*/
     //------------------------------------------------------------------------------------------------------
 
