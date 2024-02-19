@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -68,6 +69,13 @@ public class StudentController {
     public ResponseEntity<Set<StudentEntity>> findByNameOrEmail(@RequestParam String name, @RequestParam (required = false) String email){
             Set<StudentEntity> foundStudents = studentService.findByNameOrEmail(name,null);
             return ResponseEntity.ok(foundStudents);
+    }
+
+    @GetMapping(params = "search")
+    public ResponseEntity<List<StudentEntity>> findBySearch(@RequestParam("search")String keyword){
+        List<StudentEntity> studentsSearched = studentService.searchStudents(keyword);
+
+        return ResponseEntity.ok(studentsSearched);
     }
 
 

@@ -5,6 +5,7 @@ import com.zerogravitysolutions.digitalschool.DTOs.StudentDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Set;
 
 public interface StudentService {
@@ -24,6 +25,8 @@ public interface StudentService {
    //Page<StudentDto> findAll(Pageable pageable);
     Page<StudentEntity> findAll(Pageable pageable);
     Set<StudentEntity> findByNameOrEmail(String name, String email);
+
+    List<StudentEntity> searchStudents(String keyword);
 
 
 }
