@@ -58,7 +58,7 @@ public class StudentServiceImpl implements StudentService{
         studentRepository.findById(id).orElseThrow(
                 ()-> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,"Student with this id is not found"
-                ));;
+                ));
 
         return studentRepository.save(studentEntity);
     }

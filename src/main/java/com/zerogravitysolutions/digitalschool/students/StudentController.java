@@ -24,7 +24,6 @@ public class StudentController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<StudentEntity> createStudent(@RequestBody StudentEntity studentEntity){
 
         StudentEntity createdStudent = studentService.save(studentEntity);
@@ -109,7 +108,6 @@ public class StudentController {
 
 
     @DeleteMapping(path = "{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteStudentById(@PathVariable Long id){
         studentService.deleteStudentById(id);
         return ResponseEntity.noContent().build();
