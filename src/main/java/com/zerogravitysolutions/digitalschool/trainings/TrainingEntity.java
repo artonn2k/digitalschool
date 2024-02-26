@@ -1,5 +1,6 @@
 package com.zerogravitysolutions.digitalschool.trainings;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.zerogravitysolutions.digitalschool.commons.BaseEntity;
 import com.zerogravitysolutions.digitalschool.trainings.subjects.SubjectEntity;
 import jakarta.persistence.*;
@@ -17,6 +18,7 @@ public class TrainingEntity extends BaseEntity {
     private Double price;
 
     @OneToMany(mappedBy = "training", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("training")
     private Set<SubjectEntity> subjects = new HashSet<>();
 
     public String getTitle() {
