@@ -1,11 +1,11 @@
 package com.zerogravitysolutions.digitalschool.students.commons;
 
-import com.zerogravitysolutions.digitalschool.DTOs.StudentDto;
+import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
 import com.zerogravitysolutions.digitalschool.students.StudentEntity;
 
 public class StudentMapper {
 
-    public static void mapDtoToEntity(StudentDto source, StudentEntity target){
+    public static void mapDtoToEntity(StudentDTO source, StudentEntity target){
 
         if(source.getFirstName()!=null){
             target.setFirstName(source.getFirstName());
@@ -32,8 +32,8 @@ public class StudentMapper {
         }
     }
 
-    public static StudentDto mapEntityToDto(StudentEntity source){
-        StudentDto studentDto = new StudentDto();
+    public static StudentDTO mapEntityToDto(StudentEntity source){
+        StudentDTO studentDto = new StudentDTO();
 
         studentDto.setId(source.getId());
         studentDto.setFirstName(source.getFirstName());

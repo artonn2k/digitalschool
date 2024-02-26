@@ -1,7 +1,7 @@
 package com.zerogravitysolutions.digitalschool.students;
 
 
-import com.zerogravitysolutions.digitalschool.DTOs.StudentDto;
+import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
@@ -11,20 +11,19 @@ import java.util.Set;
 public interface StudentService {
 
 
-    StudentEntity findById(Long id);
-    StudentEntity save(StudentEntity studentEntity);
+    StudentDTO findById(Long id);
 
-    //List<StudentEntity> getStudentList(StudentEntity studentEntity);
+    StudentEntity save(StudentEntity studentEntity);
 
     void deleteStudentById(Long id);
 
-    StudentEntity update(Long id, StudentEntity student);
+    StudentDTO update(Long id, StudentDTO student);
 
-    StudentDto patchStudent(Long id, StudentDto studentDto);
+    StudentDTO patchStudent(Long id, StudentDTO studentDto);
 
-   //Page<StudentDto> findAll(Pageable pageable);
-    Page<StudentEntity> findAll(Pageable pageable);
-    Set<StudentEntity> findByNameOrEmail(String name, String email);
+    Page<StudentDTO> findAll(Pageable pageable);
+
+    Set<StudentDTO> findByNameOrEmail(String name, String email);
 
     List<StudentEntity> searchStudents(String keyword);
 

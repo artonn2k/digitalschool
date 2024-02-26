@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "subjects")
@@ -19,7 +20,8 @@ public class SubjectEntity extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "training_id")
-    @JsonIgnoreProperties("subjects")
+    //@JsonIgnoreProperties("subjects") //ignoring just the next subject but showing up the training
+    @JsonIgnore    // if you want training to not be returned
     private TrainingEntity training;
 
     public String getTitle() {
@@ -46,11 +48,11 @@ public class SubjectEntity extends BaseEntity {
         this.icon = icon;
     }
 
-    public TrainingEntity getTrainingEntity() {
+    public TrainingEntity getTraining() {
         return training;
     }
 
-    public void setTrainingEntity(TrainingEntity training) {
+    public void setTraining(TrainingEntity training) {
         this.training = training;
     }
 }
