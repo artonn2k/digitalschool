@@ -1,6 +1,8 @@
 package com.zerogravitysolutions.digitalschool.students;
 
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
+import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
+import com.zerogravitysolutions.digitalschool.groups.GroupRepository;
 import com.zerogravitysolutions.digitalschool.students.commons.StudentMapperMapStruct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +20,14 @@ public class StudentServiceImpl implements StudentService {
 
     private StudentMapperMapStruct studentMapperMapStruct;
 
+    private GroupRepository groupRepository;
+
     public StudentServiceImpl(StudentRepository studentRepository,
-                              StudentMapperMapStruct studentMapperMapStruct) {
-        this.studentRepository = studentRepository;;
+                              StudentMapperMapStruct studentMapperMapStruct,
+                              GroupRepository groupRepository) {
+        this.studentRepository = studentRepository;
         this.studentMapperMapStruct = studentMapperMapStruct;
+        this.groupRepository = groupRepository;
     }
 
     @Override
@@ -64,7 +70,7 @@ public class StudentServiceImpl implements StudentService {
 
         StudentEntity studentEntity = studentRepository.findById(id)
                 .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Student with this id "+id+" is not found")
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + id + " is not found")
                 );
 
         //StudentMapper.mapDtoToEntity(studentDto, studentEntity);
@@ -89,6 +95,65 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<StudentEntity> searchStudents(String keyword) {
         return studentRepository.findByFirstNameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword, keyword);
+    }
+
+    @Override
+    public Set<GroupEntity> getGroupsByStudentId(Long id) {
+
+        StudentEntity studentEntity = studentRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + id + " is not found")
+                );
+
+        return studentEntity.getGroups();
+    }
+
+    @Override
+    public void addStudentToGroup(Long studentId, Long groupId) {
+
+        StudentEntity studentEntity = studentRepository.findById(studentId)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + studentId + " is not found")
+                );
+
+        GroupEntity groupEntity = groupRepository.findById(groupId)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with this id " + groupId + " is not found")
+                );
+
+        groupEntity.getStudents().add(studentEntity);
+
+        groupRepository.save(groupEntity);
+    }
+
+    @Override
+    public Set<StudentEntity> getStudentsByGroupId(Long id) {
+
+        GroupEntity groupEntity = groupRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with this id " + id + " is not found")
+                );
+
+        return groupEntity.getStudents();
+    }
+
+    @Override
+    public void removeStudentFromGroup(Long studentId, Long groupId) {
+
+        StudentEntity studentEntity = studentRepository.findById(studentId)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + studentId + " is not found")
+                );
+
+        GroupEntity groupEntity = groupRepository.findById(groupId)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with this id " + groupId + " is not found")
+                );
+
+        groupEntity.getStudents().remove(studentEntity);
+        studentEntity.getGroups().remove(groupEntity);
+
+        studentRepository.save(studentEntity);
     }
 
     //------------------------------------------------------------------------------------------------------

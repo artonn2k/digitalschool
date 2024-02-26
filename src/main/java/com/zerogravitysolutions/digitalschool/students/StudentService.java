@@ -2,6 +2,7 @@ package com.zerogravitysolutions.digitalschool.students;
 
 
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
+import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
@@ -28,4 +29,11 @@ public interface StudentService {
     List<StudentEntity> searchStudents(String keyword);
 
 
+    Set<GroupEntity> getGroupsByStudentId(Long id);
+
+    void addStudentToGroup(Long studentId, Long groupId);
+
+    Set<StudentEntity> getStudentsByGroupId(Long id);
+
+    void removeStudentFromGroup(Long studentId, Long groupId);
 }
