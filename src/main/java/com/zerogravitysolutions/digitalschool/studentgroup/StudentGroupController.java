@@ -2,9 +2,7 @@ package com.zerogravitysolutions.digitalschool.studentgroup;
 
 import com.zerogravitysolutions.digitalschool.DTOs.GroupDTO;
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
-import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import com.zerogravitysolutions.digitalschool.groups.GroupService;
-import com.zerogravitysolutions.digitalschool.students.StudentEntity;
 import com.zerogravitysolutions.digitalschool.students.StudentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

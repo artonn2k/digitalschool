@@ -37,11 +37,4 @@ public interface StudentService {
 
     void removeStudentFromGroup(Long studentId, Long groupId);
 
-    Set<GroupEntity> getGroupsByStudentId(Long id);
-
-    void addStudentToGroup(Long studentId, Long groupId);
-
-    Set<StudentEntity> getStudentsByGroupId(Long id);
-
-    void removeStudentFromGroup(Long studentId, Long groupId);
 }
