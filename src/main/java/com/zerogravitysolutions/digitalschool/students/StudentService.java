@@ -27,7 +27,7 @@ public interface StudentService {
 
     Set<StudentDTO> findByNameOrEmail(String name, String email);
 
-    List<StudentEntity> searchStudents(String keyword);
+    List<StudentDTO> searchStudents(String keyword);
 
     Set<GroupDTO> getGroupsByStudentId(Long id);
 

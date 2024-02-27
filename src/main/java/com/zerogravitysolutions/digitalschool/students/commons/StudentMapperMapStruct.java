@@ -8,6 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -24,6 +25,9 @@ public interface StudentMapperMapStruct {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Set<StudentDTO> mapEntitiesToDtos(Set<StudentEntity> sourceList);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    List<StudentDTO> mapEntitiesToDtos(List<StudentEntity> sourceList);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     StudentEntity mapDtoToEntity(StudentDTO source);

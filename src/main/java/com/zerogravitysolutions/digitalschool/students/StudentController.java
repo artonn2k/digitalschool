@@ -61,8 +61,8 @@ public class StudentController {
     }
 
     @GetMapping(params = "search")
-    public ResponseEntity<List<StudentEntity>> findBySearch(@RequestParam("search") String keyword) {
-        List<StudentEntity> studentsSearched = studentService.searchStudents(keyword);
+    public ResponseEntity<List<StudentDTO>> findBySearch(@RequestParam("search") String keyword) {
+        List<StudentDTO> studentsSearched = studentService.searchStudents(keyword);
 
         return ResponseEntity.ok(studentsSearched);
     }

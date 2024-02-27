@@ -100,8 +100,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<StudentEntity> searchStudents(String keyword) {
-        return studentRepository.findByFirstNameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword, keyword);
+    public List<StudentDTO> searchStudents(String keyword) {
+        return studentMapperMapStruct.mapEntitiesToDtos(
+                studentRepository.findByFirstNameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword, keyword)
+        );
     }
 
     @Override
