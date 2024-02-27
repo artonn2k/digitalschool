@@ -43,6 +43,7 @@ public class StudentGroupController {
     public ResponseEntity<Set<StudentDTO>> getStudentsByGroupId(@PathVariable Long id) {
         Set<StudentDTO> groups = studentService.getStudentsByGroupId(id);
 
+
         return ResponseEntity.ok(groups);
     }
 

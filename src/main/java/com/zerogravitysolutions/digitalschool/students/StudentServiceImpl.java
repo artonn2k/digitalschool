@@ -9,7 +9,6 @@ import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import com.zerogravitysolutions.digitalschool.groups.GroupRepository;
 import com.zerogravitysolutions.digitalschool.groups.commons.GroupMapper;
 import com.zerogravitysolutions.digitalschool.students.commons.StudentMapperMapStruct;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,31 +19,23 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class StudentServiceImpl implements StudentService{
+public class StudentServiceImpl implements StudentService {
 
     private StudentRepository studentRepository;
 
-    private ModelMapper modelMapper;
-
     private StudentMapperMapStruct studentMapperMapStruct;
-
     private GroupMapper groupMapper;
 
+    private GroupRepository groupRepository;
+
     public StudentServiceImpl(StudentRepository studentRepository,
-
-                              ModelMapper modelMapper,
-                              StudentMapperMapStruct studentMapperMapStruct){
-
                               StudentMapperMapStruct studentMapperMapStruct,
-                              GroupRepository groupRepository,
-                               GroupMapper groupMapper) {
-
+                              GroupRepository groupRepository,GroupMapper groupMapper) {
         this.studentRepository = studentRepository;
-        this.modelMapper = modelMapper;
         this.studentMapperMapStruct = studentMapperMapStruct;
-
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
+        this.groupRepository = groupRepository;
 
     }
 
@@ -54,16 +45,15 @@ public class StudentServiceImpl implements StudentService{
     }
 
 
-
     //------------------------------------------------------------------------------------------------------
     @Override
-    public StudentEntity findById(Long id) {
+    public StudentDTO findById(Long id) {
         StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
-                ()-> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,"Student with this id is not found"
+                () -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Student with this id is not found"
                 ));
 
-        return studentEntity;
+        return studentMapperMapStruct.mapEntityToDto(studentEntity);
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -71,20 +61,26 @@ public class StudentServiceImpl implements StudentService{
     //------------------------------------------------------------------------------------------------------
 
     @Override
-    public StudentEntity update(Long id, StudentEntity studentEntity) {
+    public StudentDTO update(Long id, StudentDTO studentDTO) {
 
-        studentRepository.findById(id).orElseThrow(
-                ()-> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,"Student with this id is not found"
+        StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Student with this id is not found"
                 ));
 
-        return studentRepository.save(studentEntity);
+        StudentEntity merged = studentMapperMapStruct.mapDtoToEntity(studentDTO);
+        StudentEntity updated = studentRepository.save(merged);
+
+        return studentMapperMapStruct.mapEntityToDto(updated);
     }
 
     @Override
-    public StudentDto patchStudent(Long id, StudentDto studentDto) {
+    public StudentDTO patchStudent(Long id, StudentDTO studentDto) {
 
-        StudentEntity studentEntity =this.findById(id);
+        StudentEntity studentEntity = studentRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + id + " is not found")
+                );
 
         //StudentMapper.mapDtoToEntity(studentDto, studentEntity);
         studentMapperMapStruct.mapDtoToEntity(studentDto, studentEntity);
@@ -98,8 +94,10 @@ public class StudentServiceImpl implements StudentService{
 
     //------------------------------------------------------------------------------------------------------
     @Override
-    public Set<StudentEntity> findByNameOrEmail(String name, String email) {
-        return studentRepository.findByFirstNameOrEmailIgnoreCase(name,email);
+    public Set<StudentDTO> findByNameOrEmail(String name, String email) {
+        Set<StudentEntity> foundStudents = studentRepository.findByFirstNameOrEmailIgnoreCase(name, email);
+
+        return studentMapperMapStruct.mapEntitiesToDtos(foundStudents);
 
     }
 
@@ -116,8 +114,8 @@ public class StudentServiceImpl implements StudentService{
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + id + " is not found")
                 );
 
-
         return groupMapper.mapEntitiesToDtos(studentEntity.getGroups());
+
     }
 
     @Override
@@ -141,12 +139,14 @@ public class StudentServiceImpl implements StudentService{
     @Override
     public Set<StudentDTO> getStudentsByGroupId(Long id) {
 
+
         GroupEntity groupEntity = groupRepository.findById(id)
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with this id " + id + " is not found")
                 );
 
         return studentMapperMapStruct.mapEntitiesToDtos(groupEntity.getStudents());
+
     }
 
     @Override
@@ -172,7 +172,7 @@ public class StudentServiceImpl implements StudentService{
 
     @Override
     public void deleteStudentById(Long id) {
-         studentRepository.deleteById(id);
+        studentRepository.deleteById(id);
     }
 
 
@@ -181,22 +181,12 @@ public class StudentServiceImpl implements StudentService{
 
     //returning pageable list of students
     @Override
-    public Page<StudentEntity> findAll(Pageable pageable) {
-
-        return studentRepository.findAll(pageable);
+    public Page<StudentDTO> findAll(Pageable pageable) {
+        Page<StudentEntity> studentEntities = studentRepository.findAll(pageable);
+        return studentEntities.map(studentMapperMapStruct::mapEntityToDto);
 
     }
 
-    //this one returns the lists of pageable StudentDTOs
-/*   @Override
-    public Page<StudentDto> findAll(Pageable pageable) {
-        Page<StudentEntity> studentEntityPage = studentRepository.findAll(pageable);
-            return  studentEntityPage.map(student->modelMapper.map(student,StudentDto.class));
-    }
-
-    public StudentDto convertToDTO(StudentEntity studentEntity) {
-        return modelMapper.map(studentEntity, StudentDto.class);
-    }*/
     //------------------------------------------------------------------------------------------------------
 
 }

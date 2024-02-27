@@ -1,13 +1,13 @@
 package com.zerogravitysolutions.digitalschool.trainings;
 
-import com.zerogravitysolutions.digitalschool.DTOs.TrainingDto;
+import com.zerogravitysolutions.digitalschool.DTOs.TrainingDTO;
 
 import java.util.List;
-import java.util.Set;
 
 public interface TrainingService {
 
     TrainingEntity save(TrainingEntity trainingEntity);
+
     TrainingEntity findById(Long id);
 
     List<TrainingEntity> findAll();
@@ -16,7 +16,7 @@ public interface TrainingService {
 
     TrainingEntity update(Long id, TrainingEntity training);
 
-    TrainingDto patchTraining(Long id, TrainingDto trainingDto);
+    TrainingDTO patchTraining(Long id, TrainingDTO trainingDto);
 
     void deleteTrainingById(Long id);
 

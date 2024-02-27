@@ -1,13 +1,14 @@
 package com.zerogravitysolutions.digitalschool.DTOs;
 
 import com.zerogravitysolutions.digitalschool.commons.BaseDto;
+import jakarta.validation.constraints.NotBlank;
 
-public class TrainingDto extends BaseDto {
+public class SubjectDTO extends BaseDto {
 
+    @NotBlank(message = "Title must be provided")
     private String title;
     private String description;
-    private String cover;
-    private Double price;
+    private String icon;
 
     public String getTitle() {
         return title;
@@ -25,19 +26,11 @@ public class TrainingDto extends BaseDto {
         this.description = description;
     }
 
-    public String getCover() {
-        return cover;
+    public String getIcon() {
+        return icon;
     }
 
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

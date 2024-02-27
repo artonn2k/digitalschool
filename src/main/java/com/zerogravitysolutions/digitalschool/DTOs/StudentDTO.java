@@ -2,9 +2,7 @@ package com.zerogravitysolutions.digitalschool.DTOs;
 
 import com.zerogravitysolutions.digitalschool.commons.BaseDto;
 
-import java.util.Date;
-
-public class StudentDto extends BaseDto {
+public class StudentDTO extends BaseDto {
 
     private String firstName;
     private String lastName;
