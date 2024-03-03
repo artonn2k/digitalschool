@@ -2,6 +2,7 @@ package com.zerogravitysolutions.digitalschool.groups;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zerogravitysolutions.digitalschool.commons.BaseEntity;
+import com.zerogravitysolutions.digitalschool.instructorgroup.InstructorGroupEntity;
 import com.zerogravitysolutions.digitalschool.students.StudentEntity;
 import jakarta.persistence.*;
 
@@ -24,6 +25,10 @@ public class GroupEntity extends BaseEntity {
     )
             @JsonIgnore
     Set<StudentEntity> students = new HashSet<>();
+
+    @OneToMany(mappedBy = "group")
+    @JsonIgnore
+    private Set<InstructorGroupEntity> instructorGroupSet = new HashSet<>();
 
     public String getTitle() {
         return title;
