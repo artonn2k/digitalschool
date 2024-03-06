@@ -1,8 +1,10 @@
 package com.zerogravitysolutions.digitalschool.trainings;
 
 import com.zerogravitysolutions.digitalschool.DTOs.TrainingDTO;
+import com.zerogravitysolutions.digitalschool.imagestorage.ImageSize;
 import com.zerogravitysolutions.digitalschool.imagestorage.ImageStorageService;
 import com.zerogravitysolutions.digitalschool.trainings.commons.TrainingMapper;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,7 +89,7 @@ public class TrainingServiceImpl implements TrainingService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id " + id + " not found")
         );
 
-        String fileName = imageStorageService.saveImage(cover,trainingEntity.getCover());
+        String fileName = imageStorageService.saveImage(cover, trainingEntity.getCover());
 
         trainingEntity.setCover(fileName);
 
@@ -95,4 +97,28 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
+    @Override
+    public Resource readCover(Long id, ImageSize size) {
+
+        TrainingEntity trainingEntity = trainingRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id " + id + " not found")
+        );
+
+        return imageStorageService.loadImage(trainingEntity.getCover(), size);
+    }
+
+    @Override
+    public TrainingEntity deleteCover(Long id) {
+
+        TrainingEntity trainingEntity = trainingRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id " + id + " not found")
+        );
+
+        imageStorageService.delete(trainingEntity.getCover());
+
+        trainingEntity.setCover(null);
+        TrainingEntity updated = trainingRepository.save(trainingEntity);
+        return updated;
+
+    }
 }

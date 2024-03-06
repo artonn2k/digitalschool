@@ -2,6 +2,8 @@ package com.zerogravitysolutions.digitalschool.imagestorage;
 
 import com.zerogravitysolutions.digitalschool.configs.ImageProperties;
 import net.coobird.thumbnailator.Thumbnails;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,10 +13,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.MalformedURLException;
+import java.nio.file.*;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -119,6 +119,48 @@ public class ImageStorageServiceImpl implements ImageStorageService {
 
         }catch (IOException ioe){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save the image", ioe);
+        }
+    }
+
+    @Override
+    public Resource loadImage(String filename, ImageSize imageSize) {
+
+        // image/small/1231233123124134123.jpeg
+        String imagePath = imageProperties.getStoragePath() + imageSize.name().toLowerCase() + "/" + filename;
+
+        Path path = Paths.get(imagePath);
+
+        try {
+
+            Resource resource = new UrlResource(path.toUri());
+
+            if(resource.exists() && resource.isReadable()){
+                return resource;
+            }else{
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found");
+            }
+        } catch (MalformedURLException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to load image", e);
+        }
+    }
+
+    @Override
+    public void delete(String fileName) {
+
+        // image/small/1231233123124134123.jpeg
+        for(ImageSize imageSize : ImageSize.values()){
+
+            String imagePath = imageProperties.getStoragePath()+ imageSize.name().toLowerCase()+"/"+fileName;
+            Path path = Paths.get(imagePath);
+
+            try {
+                Files.delete(path);
+            }catch (NoSuchFileException nse){
+                throw  new ResponseStatusException(HttpStatus.NOT_FOUND,"Image for this training not found", nse);
+            }catch (IOException ioe){
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete the image", ioe);
+
+            }
         }
     }
 }
