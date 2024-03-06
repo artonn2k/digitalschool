@@ -6,7 +6,7 @@ public class StudentDTO extends BaseDto {
 
     private String firstName;
     private String lastName;
-    private String profilePicture;
+    private byte[] profilePicture;
     private String email;
     private String phoneNumber;
     private String address;
@@ -27,11 +27,11 @@ public class StudentDTO extends BaseDto {
         this.lastName = lastName;
     }
 
-    public String getProfilePicture() {
+    public byte[] getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(String profilePicture) {
+    public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
     }
 
