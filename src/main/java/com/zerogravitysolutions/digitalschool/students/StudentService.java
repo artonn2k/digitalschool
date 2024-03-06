@@ -4,8 +4,10 @@ package com.zerogravitysolutions.digitalschool.students;
 import com.zerogravitysolutions.digitalschool.DTOs.GroupDTO;
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
 import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
@@ -37,4 +39,7 @@ public interface StudentService {
 
     void removeStudentFromGroup(Long studentId, Long groupId);
 
+    void uploadImage(Long id, MultipartFile image);
+
+    ByteArrayResource readImage(Long id);
 }

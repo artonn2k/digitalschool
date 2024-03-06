@@ -1,9 +1,13 @@
 package com.zerogravitysolutions.digitalschool.trainings;
 
 import com.zerogravitysolutions.digitalschool.DTOs.TrainingDTO;
+import com.zerogravitysolutions.digitalschool.imagestorage.ImageSize;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -63,5 +67,28 @@ public class TrainingController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         trainingService.deleteTrainingById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(path = "/{id}/cover")
+    public ResponseEntity<TrainingEntity> uploadCoverImage(@PathVariable Long id, @RequestParam("file") MultipartFile cover) {
+
+        return ResponseEntity.ok(trainingService.uploadCover(id, cover));
+    }
+
+    @GetMapping(path = "/{id}/cover")
+    public ResponseEntity<Resource> readCover(@PathVariable Long id, @RequestParam ImageSize size) {
+
+        Resource resource = trainingService.readCover(id, size);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(resource);
+    }
+
+    @DeleteMapping(path = "/{id}/cover")
+    public ResponseEntity<TrainingEntity> deleteCover(@PathVariable Long id){
+
+        TrainingEntity trainingEntity = trainingService.deleteCover(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

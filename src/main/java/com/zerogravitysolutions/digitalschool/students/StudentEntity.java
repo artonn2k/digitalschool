@@ -13,7 +13,7 @@ import java.util.Set;
 public class StudentEntity extends BaseEntity {
     private String firstName;
     private String lastName;
-    private String profilePicture;
+    private byte[] profilePicture;
     private String email;
     private String phoneNumber;
     private String address;
@@ -39,11 +39,11 @@ public class StudentEntity extends BaseEntity {
         this.lastName = lastName;
     }
 
-    public String getProfilePicture() {
+    public byte[] getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(String profilePicture) {
+    public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
     }
 

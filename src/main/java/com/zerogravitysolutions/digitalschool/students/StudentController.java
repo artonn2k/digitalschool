@@ -1,12 +1,16 @@
 package com.zerogravitysolutions.digitalschool.students;
 
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
@@ -100,6 +104,23 @@ public class StudentController {
     public ResponseEntity<Void> deleteStudentById(@PathVariable Long id) {
         studentService.deleteStudentById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(path = "/{id}/image")
+    public ResponseEntity<Void> uploadImage(@PathVariable Long id, @RequestParam("file")MultipartFile image){
+
+        studentService.uploadImage(id, image);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping(path = "/{id}/image")
+    public ResponseEntity<ByteArrayResource> readImage(@PathVariable Long id){
+
+        ByteArrayResource profilePicture = studentService.readImage(id);
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + "student-" + id + "-image.jpeg" + "\"")
+                .body(profilePicture);
     }
 
 }
