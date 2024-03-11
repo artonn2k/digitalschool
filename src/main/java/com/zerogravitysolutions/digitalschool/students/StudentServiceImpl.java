@@ -1,8 +1,8 @@
 package com.zerogravitysolutions.digitalschool.students;
 
-import com.zerogravitysolutions.digitalschool.students.commons.StudentMapper;
 import com.zerogravitysolutions.digitalschool.DTOs.GroupDTO;
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
+import com.zerogravitysolutions.digitalschool.exceptions.StudentNotFoundException;
 import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import com.zerogravitysolutions.digitalschool.groups.GroupRepository;
 import com.zerogravitysolutions.digitalschool.groups.commons.GroupMapper;
@@ -48,9 +48,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDTO findById(Long id) {
         StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Student with this id is not found"
-                ));
+                () -> new StudentNotFoundException("Student with this id is not found"));
 
         return studentMapperMapStruct.mapEntityToDto(studentEntity);
     }
