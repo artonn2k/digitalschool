@@ -2,6 +2,8 @@ package com.zerogravitysolutions.digitalschool.imagestorage;
 
 import com.zerogravitysolutions.digitalschool.configs.ImageProperties;
 import net.coobird.thumbnailator.Thumbnails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -11,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.*;
@@ -23,6 +24,8 @@ public class ImageStorageServiceImpl implements ImageStorageService {
 
     private ImageProperties imageProperties;
 
+    private final Logger logger = LoggerFactory.getLogger(ImageStorageServiceImpl.class);
+
     public ImageStorageServiceImpl(ImageProperties imageProperties) {
         this.imageProperties = imageProperties;
     }
@@ -30,15 +33,20 @@ public class ImageStorageServiceImpl implements ImageStorageService {
     @Override
     public String saveImage(MultipartFile file, String existingFileName) {
 
+        logger.info("Trying to save images on storage with this file name: {}", existingFileName);
         try {
 
             BufferedImage originalImage = ImageIO.read(file.getInputStream());
             String fileName;
 
             if (existingFileName != null && !existingFileName.isEmpty()) {
+
+                logger.info("File name already existed and used as it is: {}", existingFileName);
                 fileName = existingFileName;
             } else {
+
                 fileName = generateUniqueFileName(Objects.requireNonNull(file.getOriginalFilename()));
+                logger.info("A new file name has been generated {}", fileName);
             }
 
             for (ImageSize imageSize : ImageSize.values()) {
@@ -47,6 +55,8 @@ public class ImageStorageServiceImpl implements ImageStorageService {
                 String imagePath = imageProperties.getStoragePath() + imageSize.name().toLowerCase() + "/" + fileName;
 
                 BufferedImage resizedImage = resizeImage(originalImage, imageSize);
+
+                logger.info("Trying to save image with name {}, at path: {}", fileName, imagePath);
                 saveImageToStorage(resizedImage, imagePath);
             }
 
@@ -54,6 +64,7 @@ public class ImageStorageServiceImpl implements ImageStorageService {
 
         } catch (IllegalArgumentException iae) {
 
+            logger.error("Invalid image dimensions {}",iae);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image", iae);
 
         } catch (IOException ioe) {
@@ -147,6 +158,7 @@ public class ImageStorageServiceImpl implements ImageStorageService {
     @Override
     public void delete(String fileName) {
 
+        logger.info("Trying do delete the cover with file name {}", fileName);
         // image/small/1231233123124134123.jpeg
         for(ImageSize imageSize : ImageSize.values()){
 
@@ -155,7 +167,10 @@ public class ImageStorageServiceImpl implements ImageStorageService {
 
             try {
                 Files.delete(path);
+                logger.info("Path for the cover to delete has been found {}", path);
             }catch (NoSuchFileException nse){
+
+                logger.info("Failed to find the cover as a file {}", nse);
                 throw  new ResponseStatusException(HttpStatus.NOT_FOUND,"Image for this training not found", nse);
             }catch (IOException ioe){
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete the image", ioe);
