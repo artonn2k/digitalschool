@@ -1,5 +1,6 @@
 package com.zerogravitysolutions.digitalschool.instructors;
 
+import com.zerogravitysolutions.digitalschool.exceptions.InstructorNotFoundException;
 import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import com.zerogravitysolutions.digitalschool.groups.GroupRepository;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class InstructorServiceImpl implements InstructorService {
     public InstructorEntity update(Long id, InstructorEntity instructor) {
 
         instructorRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id " + id + " is not found"));
+                () -> new InstructorNotFoundException("Instructor with id " + id + " is not found"));
 
 
         return instructorRepository.save(instructor);
@@ -39,7 +40,7 @@ public class InstructorServiceImpl implements InstructorService {
     @Override
     public InstructorEntity findById(Long id) {
         InstructorEntity instructorEntity = instructorRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id " + id + " is not found"));
+                () -> new InstructorNotFoundException("Instructor with id " + id + " is not found"));
 
         return instructorEntity;
     }
@@ -48,7 +49,7 @@ public class InstructorServiceImpl implements InstructorService {
     public void deleteById(Long id) {
 
         InstructorEntity instructorEntity = instructorRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id " + id + " is not found"));
+                () -> new InstructorNotFoundException("Instructor with id " + id + " is not found"));
 
         instructorRepository.delete(instructorEntity);
     }
@@ -57,7 +58,7 @@ public class InstructorServiceImpl implements InstructorService {
     public Set<GroupEntity> findGroupsByInstructorId(Long id) {
 
         instructorRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id " + id + " is not found"));
+                () -> new InstructorNotFoundException("Instructor with id " + id + " is not found"));
 
         return groupRepository.findAllByInstructorGroupSetInstructorId(id);
     }

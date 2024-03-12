@@ -1,8 +1,9 @@
 package com.zerogravitysolutions.digitalschool.students;
 
-import com.zerogravitysolutions.digitalschool.students.commons.StudentMapper;
 import com.zerogravitysolutions.digitalschool.DTOs.GroupDTO;
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
+import com.zerogravitysolutions.digitalschool.exceptions.GroupNotFoundException;
+import com.zerogravitysolutions.digitalschool.exceptions.StudentNotFoundException;
 import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import com.zerogravitysolutions.digitalschool.groups.GroupRepository;
 import com.zerogravitysolutions.digitalschool.groups.commons.GroupMapper;
@@ -48,9 +49,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDTO findById(Long id) {
         StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Student with this id is not found"
-                ));
+                () -> new StudentNotFoundException("Student with this id "+id+" is not found"));
 
         return studentMapperMapStruct.mapEntityToDto(studentEntity);
     }
@@ -59,9 +58,7 @@ public class StudentServiceImpl implements StudentService {
     public StudentDTO update(Long id, StudentDTO studentDTO) {
 
         StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Student with this id is not found"
-                ));
+                () -> new StudentNotFoundException("Student with this id "+id+" is not found"));
 
         StudentEntity merged = studentMapperMapStruct.mapDtoToEntity(studentDTO);
         StudentEntity updated = studentRepository.save(merged);
@@ -74,8 +71,8 @@ public class StudentServiceImpl implements StudentService {
 
         StudentEntity studentEntity = studentRepository.findById(id)
                 .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + id + " is not found")
-                );
+                        () -> new StudentNotFoundException("Student with this id "+id+" is not found"));
+
 
         //StudentMapper.mapDtoToEntity(studentDto, studentEntity);
         studentMapperMapStruct.mapDtoToEntity(studentDto, studentEntity);
@@ -105,9 +102,7 @@ public class StudentServiceImpl implements StudentService {
     public Set<GroupDTO> getGroupsByStudentId(Long id) {
 
         StudentEntity studentEntity = studentRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + id + " is not found")
-                );
+                .orElseThrow(() -> new StudentNotFoundException("Student with this id "+id+" is not found"));
 
         return groupMapper.mapEntitiesToDtos(studentEntity.getGroups());
 
@@ -117,14 +112,10 @@ public class StudentServiceImpl implements StudentService {
     public void addStudentToGroup(Long studentId, Long groupId) {
 
         StudentEntity studentEntity = studentRepository.findById(studentId)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + studentId + " is not found")
-                );
+                .orElseThrow(() -> new StudentNotFoundException("Student with this id "+studentId+" is not found"));
 
         GroupEntity groupEntity = groupRepository.findById(groupId)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with this id " + groupId + " is not found")
-                );
+                .orElseThrow(() -> new GroupNotFoundException("Group with this id" +groupId+ "is not found"));
 
         groupEntity.getStudents().add(studentEntity);
 
@@ -136,9 +127,7 @@ public class StudentServiceImpl implements StudentService {
 
 
         GroupEntity groupEntity = groupRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with this id " + id + " is not found")
-                );
+                .orElseThrow(() -> new GroupNotFoundException("Group with this id" +id+ "is not found"));
 
         return studentMapperMapStruct.mapEntitiesToDtos(groupEntity.getStudents());
 
@@ -148,14 +137,10 @@ public class StudentServiceImpl implements StudentService {
     public void removeStudentFromGroup(Long studentId, Long groupId) {
 
         StudentEntity studentEntity = studentRepository.findById(studentId)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + studentId + " is not found")
-                );
+                .orElseThrow(() -> new StudentNotFoundException("Student with this id "+studentId+" is not found"));
 
         GroupEntity groupEntity = groupRepository.findById(groupId)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with this id " + groupId + " is not found")
-                );
+                .orElseThrow(() -> new GroupNotFoundException("Group with this id" +groupId+ "is not found"));
 
         groupEntity.getStudents().remove(studentEntity);
         studentEntity.getGroups().remove(groupEntity);
@@ -178,9 +163,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void uploadImage(Long id, MultipartFile image) {
 
-        StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + id + " is not found")
-        );
+        StudentEntity studentEntity = studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Student with this id "+id+" is not found"));
 
         try{
             byte[] imageBytes = image.getBytes();
@@ -195,9 +179,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public ByteArrayResource readImage(Long id) {
 
-        StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with this id " + id + " is not found")
-        );
+        StudentEntity studentEntity = studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Student with this id "+id+" is not found"));
 
         byte[] image = studentEntity.getProfilePicture();
 

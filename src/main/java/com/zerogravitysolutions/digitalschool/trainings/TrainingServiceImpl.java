@@ -1,6 +1,7 @@
 package com.zerogravitysolutions.digitalschool.trainings;
 
 import com.zerogravitysolutions.digitalschool.DTOs.TrainingDTO;
+import com.zerogravitysolutions.digitalschool.exceptions.TrainingNotFoundException;
 import com.zerogravitysolutions.digitalschool.imagestorage.ImageSize;
 import com.zerogravitysolutions.digitalschool.imagestorage.ImageStorageService;
 import com.zerogravitysolutions.digitalschool.trainings.commons.TrainingMapper;
@@ -41,9 +42,7 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public TrainingEntity findById(Long id) {
         return trainingRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id " + id + " not found")
-                );
+                .orElseThrow(() -> new TrainingNotFoundException("Training with id " +id+ " not found"));
     }
 
     @Override
@@ -58,10 +57,9 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public TrainingEntity update(Long id, TrainingEntity training) {
+
         trainingRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Training with this id is not found"
-                ));
+                () -> new TrainingNotFoundException("Training with id " +id+ " not found"));
         return trainingRepository.save(training);
     }
 
@@ -86,8 +84,7 @@ public class TrainingServiceImpl implements TrainingService {
     public TrainingEntity uploadCover(Long id, MultipartFile cover) {
 
         TrainingEntity trainingEntity = trainingRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id " + id + " not found")
-        );
+                () -> new TrainingNotFoundException("Training with id " +id+ " not found"));
 
         String fileName = imageStorageService.saveImage(cover, trainingEntity.getCover());
 
@@ -101,8 +98,7 @@ public class TrainingServiceImpl implements TrainingService {
     public Resource readCover(Long id, ImageSize size) {
 
         TrainingEntity trainingEntity = trainingRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id " + id + " not found")
-        );
+                () -> new TrainingNotFoundException("Training with id " +id+ " not found"));
 
         return imageStorageService.loadImage(trainingEntity.getCover(), size);
     }
@@ -111,8 +107,7 @@ public class TrainingServiceImpl implements TrainingService {
     public TrainingEntity deleteCover(Long id) {
 
         TrainingEntity trainingEntity = trainingRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id " + id + " not found")
-        );
+                () -> new TrainingNotFoundException("Training with id " +id+ " not found"));
 
         imageStorageService.delete(trainingEntity.getCover());
 
