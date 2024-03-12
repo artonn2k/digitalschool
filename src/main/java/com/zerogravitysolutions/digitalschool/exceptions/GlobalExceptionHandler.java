@@ -19,4 +19,29 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
+
+    @ExceptionHandler(InstructorNotFoundException.class)
+    ResponseEntity<ErrorResponse> handleInstructorNotFoundException(InstructorNotFoundException iex){
+
+        logger.info(iex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(HttpStatus.NOT_FOUND, iex.getMessage()));
+    }
+
+
+    @ExceptionHandler(GroupNotFoundException.class)
+    ResponseEntity<ErrorResponse> handleGroupNotFoundException(GroupNotFoundException gex){
+
+        logger.info(gex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(HttpStatus.NOT_FOUND, gex.getMessage()));
+    }
+
+    @ExceptionHandler(TrainingNotFoundException.class)
+    ResponseEntity<ErrorResponse> handleTrainingNotFoundExcpetion(TrainingNotFoundException tex){
+
+        logger.info(tex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(HttpStatus.NOT_FOUND, tex.getMessage()));
+    }
 }

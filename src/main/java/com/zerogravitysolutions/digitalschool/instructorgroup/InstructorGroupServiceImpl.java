@@ -1,5 +1,7 @@
 package com.zerogravitysolutions.digitalschool.instructorgroup;
 
+import com.zerogravitysolutions.digitalschool.exceptions.GroupNotFoundException;
+import com.zerogravitysolutions.digitalschool.exceptions.InstructorNotFoundException;
 import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import com.zerogravitysolutions.digitalschool.groups.GroupRepository;
 import com.zerogravitysolutions.digitalschool.instructors.InstructorEntity;
@@ -35,12 +37,10 @@ public class InstructorGroupServiceImpl implements InstructorGroupService {
     public InstructorGroupEntity addInstructorToGroup(Long instructorId, Long groupId) {
 
         GroupEntity groupEntity = groupRepository.findById(groupId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with id "+groupId+ " is not found")
-        );
+                () -> new GroupNotFoundException("Group with this id " +groupId+ " is not found"));
 
         InstructorEntity instructor = instructorRepository.findById(instructorId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id "+instructorId+ " is not found")
-        );
+                () -> new InstructorNotFoundException("Instructor with id " + instructorId + " is not found"));
 
         InstructorGroupEntity instructorGroupEntity = new InstructorGroupEntity();
         instructorGroupEntity.setInstructor(instructor);
@@ -54,8 +54,7 @@ public class InstructorGroupServiceImpl implements InstructorGroupService {
     public Set<InstructorEntity> findInstructorsByGroupId(Long id) {
 
         GroupEntity groupEntity = groupRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with id "+id+ " is not found")
-        );
+                () -> new GroupNotFoundException("Group with this id " +id+ " is not found"));
 
         Set<InstructorGroupEntity> instructorGroupSet = instructorGroupRepository.findAllByGroup(groupEntity);
 
@@ -72,12 +71,10 @@ public class InstructorGroupServiceImpl implements InstructorGroupService {
     public void removeByInstructorIdAndGroupId(Long instructorId, Long groupId) {
 
         GroupEntity groupEntity = groupRepository.findById(groupId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with id "+groupId+ " is not found")
-        );
+                () -> new GroupNotFoundException("Group with this id " +groupId+ " is not found"));
 
         InstructorEntity instructor = instructorRepository.findById(instructorId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id "+instructorId+ " is not found")
-        );
+                () -> new InstructorNotFoundException("Instructor with id " + instructorId + " is not found"));
 
         Optional<InstructorGroupEntity> instructorGroupEntityOptional = instructorGroupRepository.findByInstructorAndGroup(instructor,groupEntity);
 

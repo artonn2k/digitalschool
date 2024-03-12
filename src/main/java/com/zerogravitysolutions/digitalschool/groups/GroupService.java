@@ -4,4 +4,6 @@ public interface GroupService {
     GroupEntity findById(Long id);
 
     GroupEntity create(GroupEntity group);
+
+    void deleteById(Long id);
 }
