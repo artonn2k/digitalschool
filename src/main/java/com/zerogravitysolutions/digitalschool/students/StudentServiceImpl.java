@@ -4,6 +4,7 @@ import com.zerogravitysolutions.digitalschool.DTOs.GroupDTO;
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
 import com.zerogravitysolutions.digitalschool.exceptions.GroupNotFoundException;
 import com.zerogravitysolutions.digitalschool.exceptions.StudentNotFoundException;
+import com.zerogravitysolutions.digitalschool.feignclients.EmailSenderFeignClient;
 import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import com.zerogravitysolutions.digitalschool.groups.GroupRepository;
 import com.zerogravitysolutions.digitalschool.groups.commons.GroupMapper;
@@ -12,11 +13,13 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.List;
 import java.util.Set;
 
@@ -24,20 +27,22 @@ import java.util.Set;
 public class StudentServiceImpl implements StudentService {
 
     private StudentRepository studentRepository;
-
     private StudentMapperMapStruct studentMapperMapStruct;
     private GroupMapper groupMapper;
-
     private GroupRepository groupRepository;
+    private final EmailSenderFeignClient emailSenderFeignClient;
 
     public StudentServiceImpl(StudentRepository studentRepository,
                               StudentMapperMapStruct studentMapperMapStruct,
-                              GroupRepository groupRepository, GroupMapper groupMapper) {
+                              GroupRepository groupRepository, GroupMapper groupMapper,
+                              EmailSenderFeignClient emailSenderFeignClient
+    ) {
         this.studentRepository = studentRepository;
         this.studentMapperMapStruct = studentMapperMapStruct;
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.groupRepository = groupRepository;
+        this.emailSenderFeignClient = emailSenderFeignClient;
 
     }
 
@@ -50,6 +55,14 @@ public class StudentServiceImpl implements StudentService {
     public StudentDTO findById(Long id) {
         StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
                 () -> new StudentNotFoundException("Student with this id "+id+" is not found"));
+
+        ResponseEntity<Void> responseEntity = emailSenderFeignClient.send("Hello hello", "inspireclips11@gmail.com", "Email plain text body goes here...!");
+
+        if(responseEntity.getStatusCode().is2xxSuccessful()){
+            //logger.info()
+        }else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR," Error sendin the email to client!");
+        }
 
         return studentMapperMapStruct.mapEntityToDto(studentEntity);
     }
