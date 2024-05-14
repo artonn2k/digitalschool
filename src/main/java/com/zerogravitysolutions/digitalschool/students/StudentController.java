@@ -1,6 +1,7 @@
 package com.zerogravitysolutions.digitalschool.students;
 
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +21,7 @@ import java.util.Set;
 
 
 @RestController
+//@PreAuthorize("hasAnyRole('STUDENT', 'ADMINISTRATOR')")
 @RequestMapping("/students")
 public class StudentController {
 
@@ -50,10 +55,11 @@ public class StudentController {
 
 
     @GetMapping(path = "/{id}")
+    @RolesAllowed("STUDENT")
     public ResponseEntity<StudentDTO> getStudentById(@PathVariable Long id) {
 
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         StudentDTO foundStudent = studentService.findById(id);
-
 
         return ResponseEntity.ok(foundStudent);
     }
@@ -107,19 +113,19 @@ public class StudentController {
     }
 
     @PostMapping(path = "/{id}/image")
-    public ResponseEntity<Void> uploadImage(@PathVariable Long id, @RequestParam("file")MultipartFile image){
+    public ResponseEntity<Void> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile image) {
 
         studentService.uploadImage(id, image);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping(path = "/{id}/image")
-    public ResponseEntity<ByteArrayResource> readImage(@PathVariable Long id){
+    public ResponseEntity<ByteArrayResource> readImage(@PathVariable Long id) {
 
         ByteArrayResource profilePicture = studentService.readImage(id);
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + "student-" + id + "-image.jpeg" + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "student-" + id + "-image.jpeg" + "\"")
                 .body(profilePicture);
     }
 

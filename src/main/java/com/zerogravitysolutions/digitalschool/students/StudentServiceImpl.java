@@ -9,6 +9,10 @@ import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import com.zerogravitysolutions.digitalschool.groups.GroupRepository;
 import com.zerogravitysolutions.digitalschool.groups.commons.GroupMapper;
 import com.zerogravitysolutions.digitalschool.students.commons.StudentMapperMapStruct;
+import com.zerogravitysolutions.digitalschool.utilities.UserContextHolder;
+import feign.FeignException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -31,6 +36,7 @@ public class StudentServiceImpl implements StudentService {
     private GroupMapper groupMapper;
     private GroupRepository groupRepository;
     private final EmailSenderFeignClient emailSenderFeignClient;
+    private final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
 
     public StudentServiceImpl(StudentRepository studentRepository,
                               StudentMapperMapStruct studentMapperMapStruct,
@@ -48,22 +54,47 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentEntity save(StudentEntity studentEntity) {
+        logger.info("Student created");
         return studentRepository.save(studentEntity);
     }
 
     @Override
     public StudentDTO findById(Long id) {
-        StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
-                () -> new StudentNotFoundException("Student with this id "+id+" is not found"));
 
-        ResponseEntity<Void> responseEntity = emailSenderFeignClient.send("Hello hello", "inspireclips11@gmail.com", "Email plain text body goes here...!");
+        StudentEntity studentEntity;
+        try {
+            logger.info("Attempting to find a student with ID {}", id);
+            studentEntity = studentRepository.findById(id).orElseThrow(
+                    () -> new StudentNotFoundException("Student with this id " + id + " is not found"));
 
-        if(responseEntity.getStatusCode().is2xxSuccessful()){
-            //logger.info()
-        }else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR," Error sendin the email to client!");
+            //Example of how to get user data from UserContext
+//            String email = UserContextHolder.getContext().getUserEmail();
+//            Long userId = UserContextHolder.getContext().getUserId();
+//            String authToken = UserContextHolder.getContext().getAuthToken();
+
+        } catch (Exception ex) {
+            logger.error("Error occurred while fetching student from the database", ex);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to fetch student from the database", ex);
         }
 
+        try {
+            logger.info("Attempting to send the email");
+            ResponseEntity<Void> responseEntity = emailSenderFeignClient.send("Hello hello", "inspireclips11@gmail.com", "Email plain text body goes here...!");
+
+            if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+                logger.error("Failed to send the email . Status code: {}", responseEntity.getStatusCode());
+                //throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send the email: " + responseEntity.getStatusCode());
+            }
+        } catch (FeignException fe) {
+            if (fe.getCause() instanceof ConnectException) {
+                logger.error("Connection error occurred while sending the email", fe);
+                //throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Connection error occurred while sending the email", fe);
+            } else {
+                logger.error("Failed to send the email", fe);
+                //throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send the email");
+            }
+        }
+        logger.info("Student found with ID: {}", id);
         return studentMapperMapStruct.mapEntityToDto(studentEntity);
     }
 
@@ -71,7 +102,7 @@ public class StudentServiceImpl implements StudentService {
     public StudentDTO update(Long id, StudentDTO studentDTO) {
 
         StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(
-                () -> new StudentNotFoundException("Student with this id "+id+" is not found"));
+                () -> new StudentNotFoundException("Student with this id " + id + " is not found"));
 
         StudentEntity merged = studentMapperMapStruct.mapDtoToEntity(studentDTO);
         StudentEntity updated = studentRepository.save(merged);
@@ -84,7 +115,7 @@ public class StudentServiceImpl implements StudentService {
 
         StudentEntity studentEntity = studentRepository.findById(id)
                 .orElseThrow(
-                        () -> new StudentNotFoundException("Student with this id "+id+" is not found"));
+                        () -> new StudentNotFoundException("Student with this id " + id + " is not found"));
 
 
         //StudentMapper.mapDtoToEntity(studentDto, studentEntity);
@@ -104,6 +135,14 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
+    //just to test authConverter to extract user details
+    @Override
+    public StudentEntity findByEmail(String email) {
+
+        return studentRepository.findByEmailIgnoreCase(email).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Student with this email " + email + " is not found"));
+    }
+
     @Override
     public List<StudentDTO> searchStudents(String keyword) {
         return studentMapperMapStruct.mapEntitiesToDtos(
@@ -115,7 +154,7 @@ public class StudentServiceImpl implements StudentService {
     public Set<GroupDTO> getGroupsByStudentId(Long id) {
 
         StudentEntity studentEntity = studentRepository.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException("Student with this id "+id+" is not found"));
+                .orElseThrow(() -> new StudentNotFoundException("Student with this id " + id + " is not found"));
 
         return groupMapper.mapEntitiesToDtos(studentEntity.getGroups());
 
@@ -125,10 +164,10 @@ public class StudentServiceImpl implements StudentService {
     public void addStudentToGroup(Long studentId, Long groupId) {
 
         StudentEntity studentEntity = studentRepository.findById(studentId)
-                .orElseThrow(() -> new StudentNotFoundException("Student with this id "+studentId+" is not found"));
+                .orElseThrow(() -> new StudentNotFoundException("Student with this id " + studentId + " is not found"));
 
         GroupEntity groupEntity = groupRepository.findById(groupId)
-                .orElseThrow(() -> new GroupNotFoundException("Group with this id" +groupId+ "is not found"));
+                .orElseThrow(() -> new GroupNotFoundException("Group with this id" + groupId + "is not found"));
 
         groupEntity.getStudents().add(studentEntity);
 
@@ -140,7 +179,7 @@ public class StudentServiceImpl implements StudentService {
 
 
         GroupEntity groupEntity = groupRepository.findById(id)
-                .orElseThrow(() -> new GroupNotFoundException("Group with this id" +id+ "is not found"));
+                .orElseThrow(() -> new GroupNotFoundException("Group with this id" + id + "is not found"));
 
         return studentMapperMapStruct.mapEntitiesToDtos(groupEntity.getStudents());
 
@@ -150,10 +189,10 @@ public class StudentServiceImpl implements StudentService {
     public void removeStudentFromGroup(Long studentId, Long groupId) {
 
         StudentEntity studentEntity = studentRepository.findById(studentId)
-                .orElseThrow(() -> new StudentNotFoundException("Student with this id "+studentId+" is not found"));
+                .orElseThrow(() -> new StudentNotFoundException("Student with this id " + studentId + " is not found"));
 
         GroupEntity groupEntity = groupRepository.findById(groupId)
-                .orElseThrow(() -> new GroupNotFoundException("Group with this id" +groupId+ "is not found"));
+                .orElseThrow(() -> new GroupNotFoundException("Group with this id" + groupId + "is not found"));
 
         groupEntity.getStudents().remove(studentEntity);
         studentEntity.getGroups().remove(groupEntity);
@@ -177,14 +216,14 @@ public class StudentServiceImpl implements StudentService {
     public void uploadImage(Long id, MultipartFile image) {
 
         StudentEntity studentEntity = studentRepository.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException("Student with this id "+id+" is not found"));
+                .orElseThrow(() -> new StudentNotFoundException("Student with this id " + id + " is not found"));
 
-        try{
+        try {
             byte[] imageBytes = image.getBytes();
             studentEntity.setProfilePicture(imageBytes);
 
             studentRepository.save(studentEntity);
-        }catch (IOException ioe){
+        } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
     }
@@ -193,15 +232,15 @@ public class StudentServiceImpl implements StudentService {
     public ByteArrayResource readImage(Long id) {
 
         StudentEntity studentEntity = studentRepository.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException("Student with this id "+id+" is not found"));
+                .orElseThrow(() -> new StudentNotFoundException("Student with this id " + id + " is not found"));
 
         byte[] image = studentEntity.getProfilePicture();
 
-        if(image != null){
+        if (image != null) {
             ByteArrayResource resource = new ByteArrayResource(image);
             return resource;
-        }else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile picture not found for the given id of student: "+id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile picture not found for the given id of student: " + id);
         }
     }
 }

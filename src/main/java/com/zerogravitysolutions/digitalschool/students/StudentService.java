@@ -3,7 +3,6 @@ package com.zerogravitysolutions.digitalschool.students;
 
 import com.zerogravitysolutions.digitalschool.DTOs.GroupDTO;
 import com.zerogravitysolutions.digitalschool.DTOs.StudentDTO;
-import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -28,6 +27,8 @@ public interface StudentService {
     Page<StudentDTO> findAll(Pageable pageable);
 
     Set<StudentDTO> findByNameOrEmail(String name, String email);
+
+    StudentEntity findByEmail(String email);
 
     List<StudentDTO> searchStudents(String keyword);
 
