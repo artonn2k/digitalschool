@@ -9,6 +9,7 @@ import com.zerogravitysolutions.digitalschool.groups.GroupEntity;
 import com.zerogravitysolutions.digitalschool.groups.GroupRepository;
 import com.zerogravitysolutions.digitalschool.groups.commons.GroupMapper;
 import com.zerogravitysolutions.digitalschool.students.commons.StudentMapperMapStruct;
+import com.zerogravitysolutions.digitalschool.utilities.UserContextHolder;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -64,12 +66,18 @@ public class StudentServiceImpl implements StudentService {
             logger.info("Attempting to find a student with ID {}", id);
             studentEntity = studentRepository.findById(id).orElseThrow(
                     () -> new StudentNotFoundException("Student with this id " + id + " is not found"));
-        }catch (Exception ex){
+
+            //Example of how to get user data from UserContext
+//            String email = UserContextHolder.getContext().getUserEmail();
+//            Long userId = UserContextHolder.getContext().getUserId();
+//            String authToken = UserContextHolder.getContext().getAuthToken();
+
+        } catch (Exception ex) {
             logger.error("Error occurred while fetching student from the database", ex);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to fetch student from the database", ex);
         }
 
-        try{
+        try {
             logger.info("Attempting to send the email");
             ResponseEntity<Void> responseEntity = emailSenderFeignClient.send("Hello hello", "inspireclips11@gmail.com", "Email plain text body goes here...!");
 
@@ -79,7 +87,7 @@ public class StudentServiceImpl implements StudentService {
             }
         } catch (FeignException fe) {
             if (fe.getCause() instanceof ConnectException) {
-                logger.error("Connection error occurred while sending the email" , fe);
+                logger.error("Connection error occurred while sending the email", fe);
                 //throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Connection error occurred while sending the email", fe);
             } else {
                 logger.error("Failed to send the email", fe);
@@ -125,6 +133,14 @@ public class StudentServiceImpl implements StudentService {
 
         return studentMapperMapStruct.mapEntitiesToDtos(foundStudents);
 
+    }
+
+    //just to test authConverter to extract user details
+    @Override
+    public StudentEntity findByEmail(String email) {
+
+        return studentRepository.findByEmailIgnoreCase(email).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Student with this email " + email + " is not found"));
     }
 
     @Override

@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,8 +58,8 @@ public class StudentController {
     @RolesAllowed("STUDENT")
     public ResponseEntity<StudentDTO> getStudentById(@PathVariable Long id) {
 
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         StudentDTO foundStudent = studentService.findById(id);
-
 
         return ResponseEntity.ok(foundStudent);
     }
@@ -111,19 +113,19 @@ public class StudentController {
     }
 
     @PostMapping(path = "/{id}/image")
-    public ResponseEntity<Void> uploadImage(@PathVariable Long id, @RequestParam("file")MultipartFile image){
+    public ResponseEntity<Void> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile image) {
 
         studentService.uploadImage(id, image);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping(path = "/{id}/image")
-    public ResponseEntity<ByteArrayResource> readImage(@PathVariable Long id){
+    public ResponseEntity<ByteArrayResource> readImage(@PathVariable Long id) {
 
         ByteArrayResource profilePicture = studentService.readImage(id);
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + "student-" + id + "-image.jpeg" + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "student-" + id + "-image.jpeg" + "\"")
                 .body(profilePicture);
     }
 

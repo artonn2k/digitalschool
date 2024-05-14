@@ -1,6 +1,10 @@
 package com.zerogravitysolutions.digitalschool.security;
 
 import com.nimbusds.oauth2.sdk.util.CollectionUtils;
+import com.zerogravitysolutions.digitalschool.students.StudentEntity;
+import com.zerogravitysolutions.digitalschool.students.StudentService;
+import com.zerogravitysolutions.digitalschool.utilities.UserContext;
+import com.zerogravitysolutions.digitalschool.utilities.UserContextHolder;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,8 +26,11 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
 
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter;
 
-    public JwtAuthConverter(){
+    private final StudentService studentService;
+
+    public JwtAuthConverter(StudentService studentService){
         this.jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        this.studentService = studentService;
     }
 
     @Override
@@ -33,6 +40,8 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
                 jwtGrantedAuthoritiesConverter.convert(jwt).stream(),
                         extractUserRoles(jwt).stream()
         ).collect(Collectors.toSet());
+
+        this.extractUserDetails(jwt);
 
         return new JwtAuthenticationToken(jwt, authorities);
     }
@@ -52,5 +61,17 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
         }
 
         return Collections.emptySet();
+    }
+
+    private void extractUserDetails(Jwt jwt){
+
+        final String email = jwt.getClaim("email");
+        StudentEntity studentEntity = studentService.findByEmail(email);
+
+        UserContext userContext = UserContextHolder.getContext();
+        userContext.setUserEmail(email);
+        userContext.setUserId(studentEntity.getId());
+        userContext.setAuthToken(jwt.toString());
+
     }
 }

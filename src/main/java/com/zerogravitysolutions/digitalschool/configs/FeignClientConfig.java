@@ -1,5 +1,6 @@
 package com.zerogravitysolutions.digitalschool.configs;
 
+import com.zerogravitysolutions.digitalschool.utilities.UserContextHolder;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 //@Configuration
 public class FeignClientConfig {
 
-    private String authToken;
+    private String authToken = UserContextHolder.getContext().getAuthToken();
 
     @Bean
     public RequestInterceptor requestInterceptor() {
